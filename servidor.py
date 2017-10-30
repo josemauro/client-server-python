@@ -18,21 +18,24 @@ def existe_arquivo(arquivo):
 	return os.path.isfile(caminho)
 	
 def conectado(con, cliente):
-	print "Conenectado ao cliente ", cliente
+	print "Conectado ao cliente ", cliente
 	
-	while True:
-		mensagem = con.recv(1024)
-		if existe_arquivo(mensagem):
-			f = open(PASTA_DE_ARQUIVOS + '/' +mensagem)
-			arquivo = f.read()
-			con.sendall(arquivo)
-		else:
-			con.send("Erro 404 - Arquivo nao encontrado")
+	mensagem = con.recv(1024)
+	arquivo = mensagem.split(' ')
+	arquivo = arquivo[1]
+	print arquivo
+	if existe_arquivo(arquivo):
+		f = open(PASTA_DE_ARQUIVOS + arquivo)
+		arquivo = f.read()
+		con.sendall(arquivo)
+		con.close()
+	else:
+		con.send("Erro 404 - Arquivo nao encontrado")
+		con.close()
 	print "Fechando conexao com o cliente ", cliente
-	con.close()
 
 HOST = 'localhost' 		# endereco ip do servidor
-PORT = 5000 			# porta que o servidor esta
+PORT = 8080 			# porta que o servidor esta
 
 tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp.bind((HOST, PORT)) 	# associa o socket a uma porta e um IP
